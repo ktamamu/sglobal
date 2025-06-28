@@ -25,7 +25,7 @@
 
 ## Installation
 
-### Using Homebrew (coming soon)
+### Using Homebrew
 
 ```bash
 brew tap ktamamu/tap
