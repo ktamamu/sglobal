@@ -98,7 +98,8 @@ func (c *AWSClient) ScanSecurityGroups(ctx context.Context, excludeIDs map[strin
 				return nil, fmt.Errorf("failed to describe security groups in region %s: %w", region, err)
 			}
 
-			for _, sg := range page.SecurityGroups {
+			for i := range page.SecurityGroups {
+				sg := &page.SecurityGroups[i]
 				if sg.GroupId == nil {
 					continue
 				}
