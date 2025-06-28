@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ktamamu/sglobal/internal"
 	"github.com/spf13/cobra"
+
+	"github.com/ktamamu/sglobal/internal"
 )
 
 func runScan(cmd *cobra.Command, args []string) {

@@ -1,26 +1,3 @@
-run:
-  timeout: 5m
-  issues-exit-code: 1
-  tests: true
-
-linters:
-  enable:
-    - gofmt
-    - goimports
-    - govet
-    - ineffassign
-    - misspell
-    - errcheck
-    - gosimple
-    - staticcheck
-    - unused
-    - typecheck
-    - unconvert
-    - unparam
-    - gocritic
-    - gosec
-    - revive
-
 linters-settings:
   gocritic:
     enabled-tags:
@@ -29,16 +6,46 @@ linters-settings:
       - opinionated
       - performance
       - style
-  
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+  gocyclo:
+    min-complexity: 15
+  goimports:
+    local-prefixes: github.com/ktamamu/sglobal
+  govet:
+    shadow: true
   revive:
-    min-confidence: 0
+    severity: warning
     rules:
       - name: exported
-        severity: warning
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
+        disabled: true
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gofmt
+    - goimports
+    - gocritic
+    - gosec
+    - revive
+    - misspell
+    - unconvert
+    - unparam
+
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
 
 issues:
   exclude-rules:
@@ -46,17 +53,5 @@ issues:
       linters:
         - gosec
         - errcheck
-    
-    # Exclude some linters from running on tests files.
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - dupl
-        - gosec
-
-  # Maximum issues count per one linter. Set to 0 to disable the limit.
   max-issues-per-linter: 0
-
-  # Maximum count of issues with the same text. Set to 0 to disable the limit.
   max-same-issues: 0
