@@ -84,10 +84,12 @@ Risky Inbound Rules:
 
 #### Markdown Output
 
+```markdown
 | Region | Security Group ID | Group Name | Description | VPC ID | Protocol | Port(s) | CIDR |
 |--------|------------------|------------|-------------|--------|----------|---------|------|
 | us-east-1 | sg-12345678 | web-servers | Security group for web servers | vpc-12345678 | tcp | 80 | 0.0.0.0/0 |
 | us-east-1 | sg-12345678 | web-servers | Security group for web servers | vpc-12345678 | tcp | 443 | 0.0.0.0/0 |
+```
 
 ## GitHub Actions Integration
 
