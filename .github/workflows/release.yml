@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.21
+    
+    - name: Run tests
+      run: go test ./...
+    
+    - name: Build binaries
+      run: |
+        mkdir -p dist
+        GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/sglobal-linux-amd64 .
+        GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/sglobal-linux-arm64 .
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/sglobal-darwin-amd64 .
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/sglobal-darwin-arm64 .
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/sglobal-windows-amd64.exe .
+    
+    - name: Generate checksums
+      run: |
+        cd dist
+        sha256sum * > checksums.txt
+        cat checksums.txt
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*
+        body: |
+          ## What's Changed
+          
+          See the [changelog](CHANGELOG.md) for details.
+          
+          ## Installation
+          
+          ### Homebrew
+          ```bash
+          brew tap ktamamu/tap
+          brew install sglobal
+          ```
+          
+          ### Direct Download
+          Download the appropriate binary for your platform from the assets below.
+          
+          ## Checksums
+          ```
+          $(cat dist/checksums.txt)
+          ```
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

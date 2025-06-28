@@ -1,0 +1,62 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - ineffassign
+    - misspell
+    - errcheck
+    - gosimple
+    - staticcheck
+    - unused
+    - typecheck
+    - unconvert
+    - unparam
+    - gocritic
+    - gosec
+    - revive
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+  
+  revive:
+    min-confidence: 0
+    rules:
+      - name: exported
+        severity: warning
+        disabled: false
+        arguments:
+          - "checkPrivateReceivers"
+          - "sayRepetitiveInsteadOfStutters"
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+        - errcheck
+    
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+
+  # Maximum issues count per one linter. Set to 0 to disable the limit.
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text. Set to 0 to disable the limit.
+  max-same-issues: 0
