@@ -137,7 +137,7 @@ The tool uses AWS SDK default configuration. Make sure you have:
 
 ### Prerequisites
 
-- Go 1.20 or later
+- Go 1.22 or later
 - golangci-lint (for linting)
 
 ### Building from source
