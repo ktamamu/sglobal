@@ -1,6 +1,6 @@
 # sglobal
 
-AWS Security Group Global Access Scanner - A command-line tool to identify AWS Security Groups with risky global access rules (0.0.0.0/0).
+AWS Security Group Public Access Scanner - A command-line tool to identify AWS Security Groups with risky public access rules.
 
 ## Features
 
@@ -8,6 +8,7 @@ AWS Security Group Global Access Scanner - A command-line tool to identify AWS S
 - Exclude security groups using a file-based exclusion list
 - Support for multiple output formats (JSON, text, Markdown)
 - Fast concurrent scanning across multiple regions
+- Detects public IP ranges including 0.0.0.0/0, ::/0, and other public CIDR blocks
 
 ## Installation
 
@@ -57,7 +58,6 @@ Create a text file with one Security Group ID per line:
 ```
 sg-12345678
 sg-87654321
-# This is a comment - lines starting with # are ignored
 sg-abcdef12
 ```
 
@@ -83,44 +83,66 @@ Risky Inbound Rules:
 ```
 
 #### Markdown Output
-```markdown
-# Security Groups with Global Access
 
-**Found 2 security groups with global access**
+| Region | Security Group ID | Group Name | Description | VPC ID | Protocol | Port(s) | CIDR |
+|--------|------------------|------------|-------------|--------|----------|---------|------|
+| us-east-1 | sg-12345678 | web-servers | Security group for web servers | vpc-12345678 | tcp | 80 | 0.0.0.0/0 |
+| us-east-1 | sg-12345678 | web-servers | Security group for web servers | vpc-12345678 | tcp | 443 | 0.0.0.0/0 |
 
-## us-east-1
+## GitHub Actions Integration
 
-### sg-12345678 (web-servers)
-- **Description:** Security group for web servers
-- **VPC ID:** vpc-12345678
-- **Risky Inbound Rules:**
-  - Protocol: tcp, Port: 80, CIDR: 0.0.0.0/0
-  - Protocol: tcp, Port: 443, CIDR: 0.0.0.0/0
-```
+You can integrate sglobal into your GitHub Actions workflow for automated security monitoring:
 
-## Configuration
+```yaml
+name: Check SG Global Rules
 
-The tool uses AWS SDK default configuration. Make sure you have:
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:    # Manual trigger
 
-1. AWS credentials configured (via AWS CLI, environment variables, or IAM roles)
-2. Appropriate permissions to describe EC2 security groups and regions
+jobs:
+  check_sg_rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-### Required AWS Permissions
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
 
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ec2:DescribeSecurityGroups",
-                "ec2:DescribeRegions"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
+      - name: Build sglobal
+        run: go build -o sglobal .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Scan security groups
+        run: ./sglobal --region all --output markdown > sg-report.md
+
+      - name: Create issue if violations found
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('sg-report.md', 'utf8');
+            if (report.includes('Found') && !report.includes('Found 0')) {
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Security Alert: Public Security Groups Detected',
+                body: '## Security Group Scan Results\n\n' + report
+              });
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Command Line Options
@@ -131,59 +153,6 @@ The tool uses AWS SDK default configuration. Make sure you have:
   -r, --region string         AWS region to scan (default: current profile region, 'all' for all regions)
       --config string         config file (default is $HOME/.sglobal.yaml)
   -h, --help                  help for sglobal
-```
-
-## Development
-
-### Prerequisites
-
-- Go 1.22 or later
-- golangci-lint (for linting)
-
-### Building from source
-
-```bash
-# Clone the repository
-git clone https://github.com/ktamamu/sglobal.git
-cd sglobal
-
-# Install dependencies
-make deps
-
-# Install linting tools
-make install-tools
-
-# Run all checks (format, vet, lint, test)
-make check
-
-# Build
-make build
-```
-
-### Running tests
-
-```bash
-# Run tests
-make test
-
-# Run with coverage
-go test -v -race -coverprofile=coverage.out ./...
-```
-
-### Code quality
-
-```bash
-# Format code
-make fmt
-
-# Run linter
-make lint
-
-# Run go vet
-make vet
-
-# Run all quality checks
-make check
 ```
 
 ## License
