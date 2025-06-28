@@ -1,6 +1,19 @@
-# sglobal
+<div align="center">
+  <img src="icon.png" alt="sglobal" width="128" height="128">
 
-AWS Security Group Public Access Scanner - A command-line tool to identify AWS Security Groups with risky public access rules.
+  # sglobal
+
+  AWS Security Group Public Access Scanner
+
+  [![CI](https://github.com/ktamamu/sglobal/workflows/CI/badge.svg)](https://github.com/ktamamu/sglobal/actions/workflows/ci.yml)
+  [![Release](https://github.com/ktamamu/sglobal/workflows/Release/badge.svg)](https://github.com/ktamamu/sglobal/actions/workflows/release.yml)
+  [![Go Report Card](https://goreportcard.com/badge/github.com/ktamamu/sglobal)](https://goreportcard.com/report/github.com/ktamamu/sglobal)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ktamamu/sglobal)](https://github.com/ktamamu/sglobal/releases/latest)
+  [![Go Version](https://img.shields.io/github/go-mod/go-version/ktamamu/sglobal)](https://golang.org/)
+
+  A command-line tool to identify AWS Security Groups with risky public access rules.
+</div>
 
 ## Features
 
