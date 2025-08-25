@@ -3,7 +3,7 @@ module github.com/ktamamu/sglobal
 go 1.22
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.38.0
+	github.com/aws/aws-sdk-go-v2 v1.38.1
 	github.com/aws/aws-sdk-go-v2/config v1.30.3
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.242.0
 	github.com/spf13/cobra v1.9.1
