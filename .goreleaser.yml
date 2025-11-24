@@ -32,7 +32,6 @@ archives:
     formats:
       - tar.gz
       - zip
-    rlcp: true
     files:
       - LICENSE
       - README.md
