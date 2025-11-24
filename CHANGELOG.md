@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-11-24
+
+### Changed
+- Migrated to GoReleaser for automated release management
+- Homebrew formula now uses pre-built binaries instead of building from source
+- Simplified release workflow with GoReleaser automation
+- Removed Go dependency from Homebrew installation (faster installation)
+
 ## [0.1.1] - 2025-11-23
 
 ### Changed
@@ -50,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cobra v1.8.0 (CLI framework)
 - Viper v1.18.2 (configuration)
 
-[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/ktamamu/sglobal/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ktamamu/sglobal/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ktamamu/sglobal/releases/tag/v0.1.0

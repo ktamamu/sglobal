@@ -1,0 +1,91 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+    main: .
+
+archives:
+  - format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+      - '^build:'
+      - 'README'
+      - Merge pull request
+      - Merge branch
+
+brews:
+  - repository:
+      owner: ktamamu
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    folder: Formula
+    homepage: "https://github.com/ktamamu/sglobal"
+    description: "AWS Security Group Global Access Scanner"
+    license: "MIT"
+    test: |
+      assert_match "AWS Security Group Global Access Scanner", shell_output("#{bin}/sglobal --help")
+    install: |
+      bin.install "sglobal"
+
+release:
+  github:
+    owner: ktamamu
+    name: sglobal
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## What's Changed
+
+    See the [changelog](https://github.com/ktamamu/sglobal/blob/main/CHANGELOG.md) for details.
+
+    ## Installation
+
+    ### Homebrew
+    ```bash
+    brew tap ktamamu/tap
+    brew install sglobal
+    ```
+
+    ### Direct Download
+    Download the appropriate binary for your platform from the assets below.
