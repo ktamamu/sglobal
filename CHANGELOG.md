@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-11-24
+
+### Added
+- `--version` / `-v` flag to display version information
+- Build information (version, commit hash, build date) embedded in binary
+- Version info automatically injected by GoReleaser during releases
+
 ## [0.1.2] - 2025-11-24
 
 ### Changed
@@ -58,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cobra v1.8.0 (CLI framework)
 - Viper v1.18.2 (configuration)
 
-[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/ktamamu/sglobal/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/ktamamu/sglobal/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ktamamu/sglobal/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ktamamu/sglobal/releases/tag/v0.1.0
