@@ -17,6 +17,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
+      - -X github.com/ktamamu/sglobal/cmd.version={{.Version}}
+      - -X github.com/ktamamu/sglobal/cmd.commit={{.Commit}}
+      - -X github.com/ktamamu/sglobal/cmd.date={{.Date}}
     main: .
 
 archives:

@@ -3,9 +3,15 @@
 # Binary name
 BINARY_NAME=sglobal
 
+# Version info
+VERSION ?= dev
+COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+DATE ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+LDFLAGS := -s -w -X github.com/ktamamu/sglobal/cmd.version=$(VERSION) -X github.com/ktamamu/sglobal/cmd.commit=$(COMMIT) -X github.com/ktamamu/sglobal/cmd.date=$(DATE)
+
 # Build the binary
 build:
-	go build -o $(BINARY_NAME) .
+	go build -ldflags="$(LDFLAGS)" -o $(BINARY_NAME) .
 
 # Clean build artifacts
 clean:
@@ -46,10 +52,10 @@ install: build
 
 # Build for multiple platforms
 build-all:
-	GOOS=darwin GOARCH=amd64 go build -o dist/$(BINARY_NAME)-darwin-amd64 .
-	GOOS=darwin GOARCH=arm64 go build -o dist/$(BINARY_NAME)-darwin-arm64 .
-	GOOS=linux GOARCH=amd64 go build -o dist/$(BINARY_NAME)-linux-amd64 .
-	GOOS=windows GOARCH=amd64 go build -o dist/$(BINARY_NAME)-windows-amd64.exe .
+	GOOS=darwin GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BINARY_NAME)-darwin-amd64 .
+	GOOS=darwin GOARCH=arm64 go build -ldflags="$(LDFLAGS)" -o dist/$(BINARY_NAME)-darwin-arm64 .
+	GOOS=linux GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BINARY_NAME)-linux-amd64 .
+	GOOS=windows GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BINARY_NAME)-windows-amd64.exe .
 
 # Create dist directory
 dist:
