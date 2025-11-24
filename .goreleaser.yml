@@ -20,7 +20,7 @@ builds:
     main: .
 
 archives:
-  - format: tar.gz
+  - id: default
     name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
@@ -29,9 +29,10 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    format_overrides:
-      - goos: windows
-        format: zip
+    formats:
+      - tar.gz
+      - zip
+    rlcp: true
     files:
       - LICENSE
       - README.md
