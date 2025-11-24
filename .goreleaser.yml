@@ -20,7 +20,7 @@ builds:
     main: .
 
 archives:
-  - id: default
+  - id: targz
     name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
@@ -29,9 +29,21 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    formats:
-      - tar.gz
-      - zip
+    format: tar.gz
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+  - id: zip
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format: zip
     files:
       - LICENSE
       - README.md
@@ -54,7 +66,9 @@ changelog:
       - Merge branch
 
 brews:
-  - repository:
+  - ids:
+      - targz
+    repository:
       owner: ktamamu
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
