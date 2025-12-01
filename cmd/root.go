@@ -9,6 +9,11 @@ import (
 )
 
 var (
+	// version info (set via ldflags at build time)
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+
 	cfgFile      string
 	region       string
 	excludeFile  string
@@ -16,8 +21,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "sglobal",
-	Short: "AWS Security Group Global Access Scanner",
+	Use:     "sglobal",
+	Short:   "AWS Security Group Global Access Scanner",
+	Version: version,
 	Long: `sglobal scans AWS Security Groups for rules that allow global access (0.0.0.0/0).
 It helps identify potentially risky security configurations across your AWS infrastructure.`,
 	Run: runScan,
@@ -29,6 +35,9 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	// Set custom version output
+	rootCmd.SetVersionTemplate(fmt.Sprintf("sglobal version %s (commit: %s, built: %s)\n", version, commit, date))
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.sglobal.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS region to scan (default: current profile region, 'all' for all regions)")
