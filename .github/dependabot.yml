@@ -18,6 +18,9 @@ updates:
     labels:
       - "dependencies"
       - "go"
+    cooldown:
+      default-days: 7
+
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -37,3 +40,6 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    cooldown:
+      default-days: 7
+

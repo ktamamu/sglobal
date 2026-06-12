@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Use:     "sglobal",
 	Short:   "AWS Security Group Global Access Scanner",
 	Version: version,
-	Long: `sglobal scans AWS Security Groups for rules that allow global access (0.0.0.0/0).
+	Long: `sglobal scans AWS Security Groups for rules that allow public/global access (0.0.0.0/0 and ::/0).
 It helps identify potentially risky security configurations across your AWS infrastructure.`,
 	Run: runScan,
 }

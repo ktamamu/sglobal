@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -84,44 +85,69 @@ func (c *AWSClient) getAllRegions(ctx context.Context, cfg *aws.Config) ([]strin
 }
 
 func (c *AWSClient) ScanSecurityGroups(ctx context.Context, excludeIDs map[string]bool) ([]SecurityGroupResult, error) {
-	var results []SecurityGroupResult
+	var (
+		results []SecurityGroupResult
+		mu      sync.Mutex
+		wg      sync.WaitGroup
+		errs    = make(chan error, len(c.regions))
+	)
 
 	for _, region := range c.regions {
-		client := c.ec2Clients[region]
+		wg.Add(1)
+		go func(region string) {
+			defer wg.Done()
+			client := c.ec2Clients[region]
+			input := &ec2.DescribeSecurityGroupsInput{}
+			paginator := ec2.NewDescribeSecurityGroupsPaginator(client, input)
 
-		input := &ec2.DescribeSecurityGroupsInput{}
-		paginator := ec2.NewDescribeSecurityGroupsPaginator(client, input)
-
-		for paginator.HasMorePages() {
-			page, err := paginator.NextPage(ctx)
-			if err != nil {
-				return nil, fmt.Errorf("failed to describe security groups in region %s: %w", region, err)
-			}
-
-			for i := range page.SecurityGroups {
-				sg := &page.SecurityGroups[i]
-				if sg.GroupId == nil {
-					continue
+			var regionalResults []SecurityGroupResult
+			for paginator.HasMorePages() {
+				page, err := paginator.NextPage(ctx)
+				if err != nil {
+					errs <- fmt.Errorf("failed to describe security groups in region %s: %w", region, err)
+					return
 				}
 
-				groupID := *sg.GroupId
-				if excludeIDs[groupID] {
-					continue
-				}
-
-				riskyRules := c.findRiskyInboundRules(sg.IpPermissions)
-				if len(riskyRules) > 0 {
-					result := SecurityGroupResult{
-						Region:          region,
-						SecurityGroupID: groupID,
-						GroupName:       aws.ToString(sg.GroupName),
-						Description:     aws.ToString(sg.Description),
-						VpcID:           aws.ToString(sg.VpcId),
-						RiskyRules:      riskyRules,
+				for i := range page.SecurityGroups {
+					sg := &page.SecurityGroups[i]
+					if sg.GroupId == nil {
+						continue
 					}
-					results = append(results, result)
+
+					groupID := *sg.GroupId
+					if excludeIDs[groupID] {
+						continue
+					}
+
+					riskyRules := c.findRiskyInboundRules(sg.IpPermissions)
+					if len(riskyRules) > 0 {
+						result := SecurityGroupResult{
+							Region:          region,
+							SecurityGroupID: groupID,
+							GroupName:       aws.ToString(sg.GroupName),
+							Description:     aws.ToString(sg.Description),
+							VpcID:           aws.ToString(sg.VpcId),
+							RiskyRules:      riskyRules,
+						}
+						regionalResults = append(regionalResults, result)
+					}
 				}
 			}
+
+			if len(regionalResults) > 0 {
+				mu.Lock()
+				results = append(results, regionalResults...)
+				mu.Unlock()
+			}
+		}(region)
+	}
+
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		if err != nil {
+			return nil, err
 		}
 	}
 

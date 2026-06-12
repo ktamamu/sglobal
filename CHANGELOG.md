@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-12
+
+### Added
+- Unit tests for CIDR scanning logic (`internal/aws_test.go`)
+- Dependabot cooldown configuration for Go modules and GitHub Actions
+
+### Changed
+- Refactored `ScanSecurityGroups` to perform multi-region scans concurrently using goroutines
+- Updated CLI help messages to clarify IPv6 scanning capability (`::/0`)
+
 ## [0.2.0] - 2025-11-24
 
 ### Changed
@@ -72,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cobra v1.8.0 (CLI framework)
 - Viper v1.18.2 (configuration)
 
-[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ktamamu/sglobal/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ktamamu/sglobal/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ktamamu/sglobal/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/ktamamu/sglobal/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/ktamamu/sglobal/compare/v0.1.1...v0.1.2
